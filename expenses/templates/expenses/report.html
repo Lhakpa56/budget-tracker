@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Monthly Report</h2>
+    <p class="page-subtitle">Income vs Expenses — {{ selected_year }}</p>
+  </div>
+  <form method="get" class="filter-bar">
+    <select name="year" class="filter-select">
+      {% for y in years %}
+      <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn--ghost btn--sm">Go</button>
+  </form>
+</div>
+
+<div class="dash-grid">
+  <div class="card card--tall">
+    <div class="card__header"><h3>Income vs Expenses</h3></div>
+    <canvas id="barChart"></canvas>
+  </div>
+  <div class="card">
+    <div class="card__header"><h3>Spending by Category</h3></div>
+    {% if category_data %}
+    <canvas id="doughnutChart"></canvas>
+    {% else %}
+    <div class="empty-state">No spending data yet.</div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="margin-top:1.5rem;">
+  <div class="card__header"><h3>Month-by-Month Summary</h3></div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Month</th><th>Income</th><th>Expenses</th><th>Balance</th></tr>
+      </thead>
+      <tbody>
+        {% for row in monthly_summary %}
+        <tr>
+          <td>{{ row.month_name }}</td>
+          <td class="amount amount--income">${{ row.income|floatformat:2 }}</td>
+          <td class="amount amount--expense">${{ row.expenses|floatformat:2 }}</td>
+          <td class="amount {% if row.balance >= 0 %}amount--income{% else %}amount--expense{% endif %}">
+            ${{ row.balance|floatformat:2 }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script id="chartData" type="application/json">
+{
+  "monthly": {{ monthly_summary|safe }},
+  "categories": [
+    {% for item in category_data %}
+    {"name": "{{ item.category__name|default:'Uncategorised' }}", "total": {{ item.total }}}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="{% static 'js/report.js' %}"></script>
+{% endblock %}

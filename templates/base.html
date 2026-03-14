@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Budget Tracker{% endblock %} | StudySpend</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<aside class="sidebar">
+  <div class="sidebar__brand">
+    <span class="brand-icon">◈</span>
+    <span class="brand-name">StudySpend</span>
+  </div>
+  <nav class="sidebar__nav">
+    <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+      <span class="nav-icon">⬡</span> Dashboard
+    </a>
+    <a href="{% url 'expense_list' %}" class="nav-link {% if request.resolver_match.url_name == 'expense_list' %}active{% endif %}">
+      <span class="nav-icon">≡</span> Transactions
+    </a>
+    <a href="{% url 'add_expense' %}" class="nav-link {% if request.resolver_match.url_name == 'add_expense' %}active{% endif %}">
+      <span class="nav-icon">−</span> Add Expense
+    </a>
+    <a href="{% url 'add_income' %}" class="nav-link {% if request.resolver_match.url_name == 'add_income' %}active{% endif %}">
+      <span class="nav-icon">+</span> Add Income
+    </a>
+    <a href="{% url 'manage_categories' %}" class="nav-link {% if request.resolver_match.url_name == 'manage_categories' %}active{% endif %}">
+      <span class="nav-icon">◻</span> Categories
+    </a>
+    <a href="{% url 'report' %}" class="nav-link {% if request.resolver_match.url_name == 'report' %}active{% endif %}">
+      <span class="nav-icon">◎</span> Reports
+    </a>
+  </nav>
+  <div class="sidebar__footer">
+    <span class="user-avatar">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</span>
+    <span class="user-name">{{ user.first_name|default:user.username }}</span>
+    <a href="{% url 'logout' %}" class="logout-btn" title="Logout">⏻</a>
+  </div>
+</aside>
+
+<main class="main">
+  {% if messages %}
+  <div class="messages">
+    {% for msg in messages %}
+    <div class="alert alert--{{ msg.tags }}">
+      {{ msg }}
+      <button class="alert__close" onclick="this.parentElement.remove()">×</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+{% else %}
+<div class="auth-wrapper">
+  {% if messages %}
+  <div class="messages messages--auth">
+    {% for msg in messages %}
+    <div class="alert alert--{{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% block auth_content %}{% endblock %}
+</div>
+{% endif %}
+
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

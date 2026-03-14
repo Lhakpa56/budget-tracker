@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block auth_content %}
+<div class="auth-card">
+  <div class="auth-card__visual">
+    <div class="auth-visual-content">
+      <p class="auth-tagline">Budget smarter.<br>Stress less.</p>
+      <div class="auth-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <div class="auth-card__form">
+    <div class="auth-header">
+      <span class="brand-icon-lg">◈</span>
+      <h1>Get Started</h1>
+      <p>Create your free student budget account.</p>
+    </div>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_first_name">First Name</label>
+          <input type="text" name="first_name" id="id_first_name"
+                 value="{{ form.first_name.value|default:'' }}"
+                 placeholder="Alex" required>
+          {% if form.first_name.errors %}<span class="field-error">{{ form.first_name.errors.0 }}</span>{% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_username">Username</label>
+          <input type="text" name="username" id="id_username"
+                 value="{{ form.username.value|default:'' }}"
+                 placeholder="alex123" required>
+          {% if form.username.errors %}<span class="field-error">{{ form.username.errors.0 }}</span>{% endif %}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="id_email">Email</label>
+        <input type="email" name="email" id="id_email"
+               value="{{ form.email.value|default:'' }}"
+               placeholder="alex@university.edu" required>
+        {% if form.email.errors %}<span class="field-error">{{ form.email.errors.0 }}</span>{% endif %}
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_password1">Password</label>
+          <input type="password" name="password1" id="id_password1"
+                 placeholder="Min 8 characters" required>
+          {% if form.password1.errors %}<span class="field-error">{{ form.password1.errors.0 }}</span>{% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_password2">Confirm</label>
+          <input type="password" name="password2" id="id_password2"
+                 placeholder="Repeat password" required>
+          {% if form.password2.errors %}<span class="field-error">{{ form.password2.errors.0 }}</span>{% endif %}
+        </div>
+      </div>
+      {% if form.non_field_errors %}
+        <p class="form-error">{{ form.non_field_errors.0 }}</p>
+      {% endif %}
+      <button type="submit" class="btn btn--primary btn--full">Create Account →</button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Categories</h2>
+    <p class="page-subtitle">Organise your spending</p>
+  </div>
+</div>
+
+<div class="dash-grid dash-grid--narrow">
+  <div class="form-card">
+    <h3 class="form-card__title">New Category</h3>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="{{ form.name.id_for_label }}">Category Name</label>
+        {{ form.name }}
+        {% if form.name.errors %}<span class="field-error">{{ form.name.errors.0 }}</span>{% endif %}
+      </div>
+      <button type="submit" class="btn btn--primary btn--full">Add Category</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card__header"><h3>Your Categories</h3></div>
+    {% if categories %}
+    <ul class="cat-manage-list">
+      {% for cat in categories %}
+      <li class="cat-manage-item">
+        <span class="cat-manage-item__name">{{ cat.name }}</span>
+        <form method="post" action="{% url 'delete_category' cat.pk %}" class="inline-form">
+          {% csrf_token %}
+          <button type="submit" class="btn-icon btn-icon--delete"
+                  onclick="return confirm('Delete {{ cat.name }}?')">✕</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state"><p>No categories yet. Add one to get started!</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

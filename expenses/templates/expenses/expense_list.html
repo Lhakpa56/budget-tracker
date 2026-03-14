@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Transactions{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Transactions</h2>
+    <p class="page-subtitle">All your income and expenses</p>
+  </div>
+  <div class="page-actions">
+    <a href="{% url 'add_income' %}" class="btn btn--ghost btn--sm">+ Income</a>
+    <a href="{% url 'add_expense' %}" class="btn btn--primary btn--sm">+ Expense</a>
+  </div>
+</div>
+
+<form method="get" class="filter-bar">
+  <select name="month" class="filter-select">
+    {% for m in months %}
+    <option value="{{ m }}" {% if m == selected_month %}selected{% endif %}>
+      {{ m }}
+    </option>
+    {% endfor %}
+  </select>
+  <select name="year" class="filter-select">
+    {% for y in years %}
+    <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn--ghost btn--sm">Filter</button>
+</form>
+
+<div class="pill-row">
+  <div class="pill pill--income">↑ Income ${{ total_income|floatformat:2 }}</div>
+  <div class="pill pill--expense">↓ Expenses ${{ total_expenses|floatformat:2 }}</div>
+  <div class="pill {% if balance >= 0 %}pill--positive{% else %}pill--negative{% endif %}">
+    ◎ Balance ${{ balance|floatformat:2 }}
+  </div>
+</div>
+
+<div class="dash-grid">
+  <div class="card">
+    <div class="card__header"><h3>Expenses</h3></div>
+    {% if expenses %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for exp in expenses %}
+          <tr>
+            <td>{{ exp.date|date:"M d, Y" }}</td>
+            <td><span class="badge">{{ exp.category }}</span></td>
+            <td>{{ exp.description|default:"—" }}</td>
+            <td class="amount amount--expense">-${{ exp.amount|floatformat:2 }}</td>
+            <td>
+              <form method="post" action="{% url 'delete_expense' exp.pk %}" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-icon btn-icon--delete"
+                        onclick="return confirm('Delete this expense?')">✕</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">No expenses found for this period.</div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card__header"><h3>Income</h3></div>
+    {% if incomes %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Date</th><th>Source</th><th>Amount</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for inc in incomes %}
+          <tr>
+            <td>{{ inc.date|date:"M d, Y" }}</td>
+            <td>{{ inc.source|default:"—" }}</td>
+            <td class="amount amount--income">+${{ inc.amount|floatformat:2 }}</td>
+            <td>
+              <form method="post" action="{% url 'delete_income' inc.pk %}" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-icon btn-icon--delete"
+                        onclick="return confirm('Delete this income entry?')">✕</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">No income found for this period.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

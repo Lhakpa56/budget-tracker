@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block auth_content %}
+<div class="auth-card">
+  <div class="auth-card__visual">
+    <div class="auth-visual-content">
+      <p class="auth-tagline">Track every dollar.<br>Own your finances.</p>
+      <div class="auth-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <div class="auth-card__form">
+    <div class="auth-header">
+      <span class="brand-icon-lg">◈</span>
+      <h1>StudySpend</h1>
+      <p>Welcome back — let's check your budget.</p>
+    </div>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username"
+               value="{{ form.username.value|default:'' }}"
+               placeholder="your_username" autocomplete="username" required>
+        {% if form.username.errors %}
+          <span class="field-error">{{ form.username.errors.0 }}</span>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password"
+               placeholder="••••••••" autocomplete="current-password" required>
+        {% if form.password.errors %}
+          <span class="field-error">{{ form.password.errors.0 }}</span>
+        {% endif %}
+      </div>
+      {% if form.non_field_errors %}
+        <p class="form-error">{{ form.non_field_errors.0 }}</p>
+      {% endif %}
+      <button type="submit" class="btn btn--primary btn--full">Sign In →</button>
+    </form>
+    <p class="auth-switch">New here? <a href="{% url 'register' %}">Create an account</a></p>
+  </div>
+</div>
+{% endblock %}

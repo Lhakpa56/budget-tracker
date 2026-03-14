@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Dashboard</h2>
+    <p class="page-subtitle">Your financial snapshot for this month</p>
+  </div>
+  <div class="page-actions">
+    <a href="{% url 'add_income' %}" class="btn btn--ghost btn--sm">+ Income</a>
+    <a href="{% url 'add_expense' %}" class="btn btn--primary btn--sm">+ Expense</a>
+  </div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card stat-card--income">
+    <div class="stat-card__label">Total Income</div>
+    <div class="stat-card__value">${{ total_income|floatformat:2 }}</div>
+    <div class="stat-card__icon">↑</div>
+  </div>
+  <div class="stat-card stat-card--expense">
+    <div class="stat-card__label">Total Expenses</div>
+    <div class="stat-card__value">${{ total_expenses|floatformat:2 }}</div>
+    <div class="stat-card__icon">↓</div>
+  </div>
+  <div class="stat-card {% if balance >= 0 %}stat-card--positive{% else %}stat-card--negative{% endif %}">
+    <div class="stat-card__label">Remaining Balance</div>
+    <div class="stat-card__value">${{ balance|floatformat:2 }}</div>
+    <div class="stat-card__icon">◎</div>
+  </div>
+</div>
+
+<div class="dash-grid">
+  <div class="card">
+    <div class="card__header">
+      <h3>Recent Expenses</h3>
+      <a href="{% url 'expense_list' %}" class="card__link">View all →</a>
+    </div>
+    {% if recent_expenses %}
+    <ul class="tx-list">
+      {% for exp in recent_expenses %}
+      <li class="tx-item">
+        <div class="tx-item__dot tx-item__dot--expense"></div>
+        <div class="tx-item__info">
+          <span class="tx-item__desc">{{ exp.description|default:"No description" }}</span>
+          <span class="tx-item__cat">{{ exp.category }}</span>
+        </div>
+        <div class="tx-item__right">
+          <span class="tx-item__amount tx-item__amount--expense">-${{ exp.amount|floatformat:2 }}</span>
+          <span class="tx-item__date">{{ exp.date|date:"M d" }}</span>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state">
+      <p>No expenses yet. <a href="{% url 'add_expense' %}">Add your first one →</a></p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card__header"><h3>Spending by Category</h3></div>
+    {% if category_data %}
+    <ul class="cat-list">
+      {% for item in category_data %}
+      <li class="cat-item">
+        <span class="cat-item__name">{{ item.category__name|default:"Uncategorised" }}</span>
+        <div class="cat-item__bar-wrap">
+          {% if total_expenses > 0 %}
+          <div class="cat-item__bar" style="width: {% widthratio item.total total_expenses 100 %}%"></div>
+          {% endif %}
+        </div>
+        <span class="cat-item__amount">${{ item.total|floatformat:2 }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state"><p>No spending data yet.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
