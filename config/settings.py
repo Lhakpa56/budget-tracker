@@ -5,6 +5,7 @@ Django settings for Student Budget Tracker.
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import dj_database_url
 
 # Load .env file from the project root (same folder as manage.py)
 load_dotenv(os.path.join(Path(__file__).resolve().parent.parent, ".env"))
